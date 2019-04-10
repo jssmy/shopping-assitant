@@ -20,7 +20,20 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/Theme.Speech.PopupOverlay" />
-        <include layout="@layout/item_result"/>
+        <TextView
+            android:textColor="@color/white"
+            android:background="@color/blueGrey800"
+            android:elevation="5dp"
+            android:layout_alignParentTop="true"
+            app:layout_scrollFlags = "scroll|enterAlways"
+            android:id="@+id/assitant_status"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="Asistente desconectado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/launcher_content" />

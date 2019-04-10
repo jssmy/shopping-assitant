@@ -14,7 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Speech"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".login_activity"></activity>
+        <activity android:name=".product_detail_activity"></activity>
+        <activity android:name=".login_activity" />
         <activity android:name=".menu_main_activity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".splash_activity">

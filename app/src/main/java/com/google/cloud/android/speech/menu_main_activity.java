@@ -27,6 +27,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
@@ -82,14 +83,17 @@ public class menu_main_activity extends AppCompatActivity
         boolean listening = false;
 
         // View references
-        private TextView mStatus;
-        private TextView mText;
+        //private TextView mStatus;
+        private  TextView assitant_status;
+        //private TextView mText;
         private TextView mUserName;
         private TextView mUserEmail;
 
         private View mHeaderView;
         private User user;
 
+
+        private ProgressBar progressBar;
 
         //product view
 
@@ -113,10 +117,11 @@ public class menu_main_activity extends AppCompatActivity
             NavigationView navigationView = (NavigationView) findViewById(R.id.launcher_nav_view);
             navigationView.setNavigationItemSelectedListener(this);
 
+            progressBar = new ProgressBar(this);
 
             /* micropjone */
             microphone =  (FloatingActionButton)findViewById(R.id.fab);
-
+            progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
 
             /*  speecher */
@@ -127,8 +132,9 @@ public class menu_main_activity extends AppCompatActivity
             mColorMicHearing = getResources().getColorStateList(R.color.status_hearing);
             mColorMicNotHearing = getResources().getColorStateList(R.color.status_not_hearing);
 
-            mStatus = (TextView) findViewById(R.id.status);
-            mText = (TextView) findViewById(R.id.text);
+            //mStatus = (TextView) findViewById(R.id.status);
+            //mText = (TextView) findViewById(R.id.text);
+            assitant_status = (TextView)findViewById(R.id.assitant_status);
             mUserName = (TextView)findViewById(R.id.launcher_header_username);
             mUserEmail= (TextView)findViewById(R.id.launcher_header_email);
 
@@ -166,11 +172,13 @@ public class menu_main_activity extends AppCompatActivity
         public void speaking(View view)
         {
 
+
+
             listening=!listening;
 
             if(listening)
             {
-
+                assitant_status.setText("Escuchando...");
                 // Prepare Cloud Speech API
                 bindService(new Intent(this, SpeechService.class), mServiceConnection, BIND_AUTO_CREATE);
 
@@ -190,8 +198,9 @@ public class menu_main_activity extends AppCompatActivity
                 stopVoiceRecorder();
                 microphone.setImageResource(R.drawable.ic_mic_none_black_24dp);
                 microphone.setBackgroundTintList(mColorMicNotHearing);
-                mText.setText(null);
-                mStatus.setText(null);
+                assitant_status.setText("Asistente desconectado");
+                //mText.setText(null);
+                //mStatus.setText(null);
             }
         }
 
@@ -274,7 +283,7 @@ public class menu_main_activity extends AppCompatActivity
                         if (isFinal) {
                             mVoiceRecorder.dismiss();
                         }
-                        if (mText != null && !TextUtils.isEmpty(text)) {
+                        if (!TextUtils.isEmpty(text)) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -283,7 +292,8 @@ public class menu_main_activity extends AppCompatActivity
                                         //mAdapter.addResult(text);
                                         //mRecyclerView.smoothScrollToPosition(0);
                                     } else {
-                                        mText.setText(text);
+                                        System.out.println("[ USER SAY]: "+text);
+                                        //mText.setText(text);
                                     }
                                 }
                             });
@@ -303,7 +313,7 @@ public class menu_main_activity extends AppCompatActivity
             public void onServiceConnected(ComponentName componentName, IBinder binder) {
                 mSpeechService = SpeechService.from(binder);
                 mSpeechService.addListener(mSpeechServiceListener);
-                mStatus.setVisibility(View.VISIBLE);
+                //mStatus.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -318,7 +328,7 @@ public class menu_main_activity extends AppCompatActivity
                 @Override
                 public void run() {
 
-                    mStatus.setTextColor(hearingVoice ? mColorHearing : mColorNotHearing);
+                    //mStatus.setTextColor(hearingVoice ? mColorHearing : mColorNotHearing);
                     //microphone.setBackgroundTintList(hearingVoice?getResources().getColorStateList(R.color.accent):getResources().getColorStateList(R.color.primary_dark));
                     microphone.setImageResource(hearingVoice?R.drawable.ic_mic_black_24dp:R.drawable.ic_mic_none_black_24dp);
                     microphone.setBackgroundTintList(hearingVoice?mColorMicHearing:mColorMicNotHearing);
@@ -387,14 +397,17 @@ public class menu_main_activity extends AppCompatActivity
                                 for (int i=0; i<response.length(); i++){
 
                                     obj = response.getJSONObject(i);
-                                    Product product = new Product(obj.getString("name"),Float.parseFloat(obj.getString("price")),obj.getInt("ranking"),obj.getString("description"),obj.getString("url_img"));
+                                    Product product = new Product(obj.getInt("id"),obj.getString("name"),Float.parseFloat(obj.getString("price")),obj.getInt("ranking"),obj.getString("description"),obj.getString("url_img"));
                                     products.add(product);
                                 }
 
                             }catch (JSONException e){
                                 e.printStackTrace();
                             }
+                            progressBar.setVisibility(View.INVISIBLE);
+
                             productAdapterSettings(products);
+                            products=null;
                 }
                 }, new Response.ErrorListener() {
                     @Override

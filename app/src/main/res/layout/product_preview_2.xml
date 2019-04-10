@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:clickable="true"
+    android:id="@+id/product_preview_2"
+    android:background="@color/white"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardCornerRadius="0dp"
+    app:contentPadding="5dp"
+    app:cardBackgroundColor="@color/white"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="2.5dp">
+
+
+    <android.support.constraint.ConstraintLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/border_one"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="#88000000"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/vertical_guide"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.45"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="0dp" />
+
+        <TextView
+            android:id="@+id/item_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="Rs. 43 per Dozen"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:layout_constraintLeft_toLeftOf="@+id/vertical_guide"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/border_one" />
+
+
+        <!--
+        <ImageView
+            android:src="@drawable/ic_favorite_border_black_24dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/favourite"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_alignBottom="@+id/item_image"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="15dp"/>
+
+        -->
+
+
+        <TextView
+            android:id="@+id/item_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:background="@color/green"
+            android:padding="3dp"
+            android:text="Producto ID: 123334"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            app:layout_constraintLeft_toLeftOf="@+id/item_title"
+            app:layout_constraintTop_toBottomOf="@+id/item_available" />
+
+        <TextView
+            android:id="@+id/item_available"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Available : 30"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:layout_constraintLeft_toLeftOf="@+id/item_title"
+            app:layout_constraintTop_toBottomOf="@+id/item_title" />
+
+
+        <ImageView
+            android:id="@+id/item_image"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:background="@color/backgroundTinted"
+            android:scaleType="centerCrop"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/vertical_guide"
+            app:layout_constraintTop_toTopOf="@+id/item_title" />
+
+        <ImageView
+            android:id="@+id/favourite"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignBottom="@+id/item_image"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="5dp"
+            android:src="@drawable/ic_favorite_border_black_24dp" />
+
+        <TextView
+            android:id="@+id/item_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:background="@color/primary"
+            android:padding="3dp"
+            android:text="S/. 4.3"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="@+id/item_image" />
+
+        <TextView
+            android:id="@+id/border_two"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="#88000000"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/item_image" />
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v7.widget.CardView>

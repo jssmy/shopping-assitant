@@ -3,18 +3,19 @@ package com.google.cloud.android.speech.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.cloud.android.speech.R;
 import com.google.cloud.android.speech.models.Product;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.cloud.android.speech.product_detail_activity;
 
 import java.util.List;
 
@@ -35,14 +36,17 @@ public class ProductApater extends RecyclerView.Adapter<ProductApater.ProductVie
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view;
         LayoutInflater inflater  = LayoutInflater.from(context);
-        view = inflater.inflate(R.layout.product_detail,viewGroup,false) ;
+        view = inflater.inflate(R.layout.product_preview_2,viewGroup,false) ;
         final ProductViewHolder viewHolder = new ProductViewHolder(view) ;
         viewHolder._product_detail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 /* ejnviar a ventana diferente */
-
+                Intent i = new Intent(context, product_detail_activity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.putExtra("item_code",data.get(viewHolder.getAdapterPosition()).getID());
+                context.startActivity(i);
             }
         });
 
@@ -53,9 +57,10 @@ public class ProductApater extends RecyclerView.Adapter<ProductApater.ProductVie
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder productViewHolder, int i) {
         productViewHolder._product_name.setText(data.get(i).getName());
-        productViewHolder._product_ranking.setText(String.valueOf(data.get(i).getRanking()));
-        productViewHolder._product_price.setText(String.valueOf(data.get(i).getPrice()));
-        productViewHolder._product_description.setText(data.get(i).getDescription());
+        productViewHolder._product_code.setText("Producto ID: "+String.valueOf(data.get(i).getID()));
+        productViewHolder._product_price.setText("S/. "+String.valueOf(data.get(i).getPrice()));
+        ///productViewHolder._product_description.setText(data.get(i).getDescription());
+        //productViewHolder._product_ranking.setText(String.valueOf(data.get(i).getRanking()));
 
         /**holder.tv_name.setText(mData.get(position).getName());
         holder.tv_rating.setText(mData.get(position).getRating());
@@ -75,35 +80,25 @@ public class ProductApater extends RecyclerView.Adapter<ProductApater.ProductVie
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
 
 
-        LinearLayout _product_detail;
+        CardView _product_detail;
         ImageView _product_image;
         TextView _product_name;
-
-        TextView _product_description;
-        TextView _product_ranking;
+        TextView _product_code;
+        //TextView _product_description;
+        //TextView _product_ranking;
         TextView _product_price;
 
         public ProductViewHolder(View itemView) {
             super(itemView);
 
-            _product_detail = (LinearLayout)itemView.findViewById(R.id.product_detail);
-            _product_image = (ImageView)itemView.findViewById(R.id.product_image);
-            _product_name = (TextView)itemView.findViewById(R.id.product_name);
-            _product_description = (TextView)itemView.findViewById(R.id.product_description);
-            _product_price = (TextView)itemView.findViewById(R.id.product_price);
-            _product_ranking = (TextView)itemView.findViewById(R.id.product_ranking);
+
+            _product_detail = (CardView)itemView.findViewById(R.id.product_preview_2);
+            _product_image = (ImageView)itemView.findViewById(R.id.item_image);
+            _product_name = (TextView)itemView.findViewById(R.id.item_title);
+            _product_price = (TextView)itemView.findViewById(R.id.item_price);
+            _product_code = (TextView)itemView.findViewById(R.id.item_code);
 
 
-
-
-
-
-            /*
-            tv_name = itemView.findViewById(R.id.anime_name);
-            tv_category = itemView.findViewById(R.id.categorie);
-            tv_rating = itemView.findViewById(R.id.rating);
-            tv_studio = itemView.findViewById(R.id.studio);
-            img_thumbnail = itemView.findViewById(R.id.thumbnail);*/
 
         }
     }

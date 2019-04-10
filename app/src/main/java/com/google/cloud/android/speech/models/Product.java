@@ -31,6 +31,15 @@ public class Product {
         this.url_img = url_img;
     }
 
+    public Product(int ID, String name, float price, int ranking, String description, String url_img) {
+        this.ID = ID;
+        this.name = name;
+        this.price = price;
+        this.ranking = ranking;
+        this.description = description;
+        this.url_img = url_img;
+    }
+
     public int getID() {
         return ID;
     }
