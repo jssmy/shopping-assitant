@@ -22,8 +22,11 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.res.ResourcesCompat;
@@ -32,6 +35,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,11 +44,52 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.cloud.android.speech.utils.MessageDialogFragment;
+
 import com.google.cloud.android.speech.utils.SpeechService;
 import com.google.cloud.android.speech.utils.VoiceRecorder;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import ai.api.AIServiceException;
+import ai.api.RequestExtras;
+import ai.api.android.AIConfiguration;
+import ai.api.android.AIDataService;
+import ai.api.android.AIService;
+import ai.api.android.GsonFactory;
+import ai.api.model.AIContext;
+import ai.api.model.AIError;
+import ai.api.model.AIEvent;
+import ai.api.model.AIRequest;
+import ai.api.model.AIResponse;
+import ai.api.model.Metadata;
+import ai.api.model.Result;
+import ai.api.model.Status;
+
+/*
+* text to speech
+* */
+
+import android.media.AudioManager;
+import org.ispeech.SpeechSynthesis;
+import org.ispeech.SpeechSynthesisEvent;
+import org.ispeech.error.BusyException;
+import org.ispeech.error.InvalidApiKeyException;
+import org.ispeech.error.NoNetworkException;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.widget.Toast;
+
+
+
+/* android stt */
+import android.speech.tts.TextToSpeech;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity
         implements MessageDialogFragment.Listener {
@@ -55,8 +100,10 @@ public class MainActivity extends AppCompatActivity
 
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
 
-    private SpeechService mSpeechService;
+    private Gson gson = GsonFactory.getGson();
 
+    private SpeechService mSpeechService;
+    public static final String TAG = MainActivity.class.getName();
     private VoiceRecorder mVoiceRecorder;
     private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
 
@@ -95,6 +142,18 @@ public class MainActivity extends AppCompatActivity
     private ResultAdapter mAdapter;
     private RecyclerView mRecyclerView;
 
+
+    //AI
+    private  AIDataService dataService;
+    private AIService aiService;
+
+    /* tts*/
+    SpeechSynthesis synthesis;
+
+
+    /* tts android */
+    TextToSpeech speecher;
+
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
         @Override
@@ -131,6 +190,56 @@ public class MainActivity extends AppCompatActivity
                 savedInstanceState.getStringArrayList(STATE_RESULTS);
         mAdapter = new ResultAdapter(results);
         mRecyclerView.setAdapter(mAdapter);
+        iniService();
+        /* tts */
+        //prepareTTSEngine();
+        //synthesis.setStreamType(AudioManager.STREAM_MUSIC);
+
+        /*tts  android*/
+        speecher = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    speecher.setLanguage(Locale.ROOT);
+                    speecher.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                        @Override
+                        public void onStart(String utteranceId) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    stopVoiceRecorder();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onDone(String utteranceId) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    startVoiceRecorder();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onError(String utteranceId) {
+
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            protected void finalize() throws Throwable {
+                super.finalize();
+
+            }
+        });
+
+
+
     }
 
     @Override
@@ -157,12 +266,10 @@ public class MainActivity extends AppCompatActivity
     protected void onStop() {
         // Stop listening to voice
         stopVoiceRecorder();
-
         // Stop Cloud Speech API
         mSpeechService.removeListener(mSpeechServiceListener);
         unbindService(mServiceConnection);
         mSpeechService = null;
-
         super.onStop();
     }
 
@@ -256,10 +363,21 @@ public class MainActivity extends AppCompatActivity
                             public void run() {
                                 if (isFinal) {
                                     mText.setText(null);
-                                    mAdapter.addResult(text);
-                                    mRecyclerView.smoothScrollToPosition(0);
+                                    sendRequest(text);
+
+                                    //mAdapter.addResult(text);
+                                    //mRecyclerView.smoothScrollToPosition(0);
                                 } else {
                                     mText.setText(text);
+                                    /*
+                                    try {
+                                        //synthesis.speak("hola");
+                                    }catch (BusyException e){
+                                        e.printStackTrace();
+                                    }catch (NoNetworkException n){
+                                    }catch (NoNetworkException n){
+                                        n.printStackTrace();
+                                    }*/
                                 }
                             }
                         });
@@ -312,6 +430,172 @@ public class MainActivity extends AppCompatActivity
             return mResults;
         }
 
+
+
     }
+
+    private void iniService(){
+        final AIConfiguration  config = new AIConfiguration("c6f424e220314859b7d7024c9c7daa6f",AIConfiguration.SupportedLanguages.Spanish,AIConfiguration.RecognitionEngine.System);
+        dataService = new AIDataService(getApplicationContext(),config);
+
+
+
+    }
+
+
+    private void sendRequest(String queryString) {
+
+
+
+        final AsyncTask<String, Void, AIResponse> task = new AsyncTask<String, Void, AIResponse>() {
+
+            private AIError aiError;
+
+            @Override
+            protected AIResponse doInBackground(String... params) {
+                final AIRequest request = new AIRequest();
+                String query = params[0];
+
+                request.setQuery(query);
+                try {
+                    final AIResponse response = dataService.request(request);
+                    return response;
+                } catch (AIServiceException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(final AIResponse response) {
+
+                if (response != null) {
+                    onResult(response);
+                } else {
+                    //onError(aiError);
+                }
+            }
+        }.execute(queryString);
+
+        //task.execute(queryString);
+    }
+
+    private void onResult(final AIResponse response) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "onResult");
+                //resultTextView.setText(gson.toJson(response));
+                System.out.println(gson.toJson(response));
+                Log.i(TAG, "Received success response");
+                // this is example how to get different parts of result object
+                final Status status = response.getStatus();
+                Log.i(TAG, "Status code: " + status.getCode());
+                Log.i(TAG, "Status type: " + status.getErrorType());
+
+                final Result result = response.getResult();
+                Log.i(TAG, "Resolved query: " + result.getResolvedQuery());
+
+                Log.i(TAG, "Action: " + result.getAction());
+
+                final String speech = result.getFulfillment().getSpeech();
+                speak(speech);
+                mAdapter.addResult(speech);
+                mRecyclerView.smoothScrollToPosition(0);
+                /*
+                try {
+                    synthesis.speak(speech);
+                }catch (BusyException e){
+                    e.printStackTrace();
+                }catch (NoNetworkException n){
+                    n.printStackTrace();
+                }*/
+
+                Log.i(TAG, "Speech: " + speech);
+                //TTS.speak(speech);
+
+                final Metadata metadata = result.getMetadata();
+                if (metadata != null) {
+                    Log.i(TAG, "Intent id: " + metadata.getIntentId());
+                    Log.i(TAG, "Intent name: " + metadata.getIntentName());
+                }
+
+                final HashMap<String, JsonElement> params = result.getParameters();
+                if (params != null && !params.isEmpty()) {
+                    Log.i(TAG, "Parameters: ");
+                    for (final Map.Entry<String, JsonElement> entry : params.entrySet()) {
+                        Log.i(TAG, String.format("%s: %s", entry.getKey(), entry.getValue().toString()));
+                    }
+                }
+
+
+            }
+
+        });
+    }
+
+    /*
+    * tts
+    * */
+
+    private void prepareTTSEngine() {
+        try {
+                synthesis = SpeechSynthesis.getInstance(this);
+            synthesis.setSpeechSynthesisEvent(new SpeechSynthesisEvent() {
+
+                public void onPlaySuccessful() {
+                    Log.i(TAG, "onPlaySuccessful");
+                }
+
+                public void onPlayStopped() {
+                    Log.i(TAG, "onPlayStopped");
+                }
+
+                public void onPlayFailed(Exception e) {
+                    Log.e(TAG, "onPlayFailed");
+
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                    builder.setMessage("Error[TTSActivity]: " + e.toString())
+                            .setCancelable(false)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                }
+
+                public void onPlayStart() {
+                    Log.i(TAG, "onPlayStart");
+                }
+
+                @Override
+                public void onPlayCanceled() {
+                    Log.i(TAG, "onPlayCanceled");
+                }
+            });
+
+
+        } catch (InvalidApiKeyException e) {
+            Log.e(TAG, "Invalid API key\n" + e.getStackTrace());
+            Toast.makeText(getApplicationContext(), "ERROR: Invalid API key", Toast.LENGTH_LONG).show();
+        }
+    }
+    protected void onPause() {
+        this.synthesis.stop();
+        super.onPause();
+    }
+
+
+    private void speak(String text){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            speecher.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+        }else{
+            speecher.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        }
+    }
+
+
 
 }

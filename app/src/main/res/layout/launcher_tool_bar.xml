@@ -5,21 +5,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-      android:orientation="vertical"
+    android:orientation="vertical"
     tools:context="com.google.cloud.android.speech.menu_main_activity">
-
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:theme="@style/Theme.Speech.AppBarOverlay">
 
+        android:orientation="vertical">
         <android.support.v7.widget.Toolbar
             android:id="@+id/launcher_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.Speech.PopupOverlay" />
+            android:background="?attr/colorPrimary"/>
         <TextView
             android:textColor="@color/white"
             android:background="@color/blueGrey800"

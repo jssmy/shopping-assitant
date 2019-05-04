@@ -17,6 +17,10 @@
             android:id="@+id/nav_shopping_historial"
             android:icon="@drawable/ic_today_black_24dp"
             android:title="Historial de compras" />
+        <item
+            android:id="@+id/speech"
+            android:icon="@drawable/ic_lightbulb_outline_black_24dp"
+            android:title="Speech" />
 
     </group>
 

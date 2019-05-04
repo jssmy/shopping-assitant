@@ -16,6 +16,7 @@ import com.google.cloud.android.speech.data.SessionHandler;
 import com.google.cloud.android.speech.models.User;
 import com.google.cloud.android.speech.utils.MySingleton;
 import com.google.cloud.android.speech.utils.constants;
+import com.google.cloud.android.speech.data.SessionHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,6 +66,10 @@ public class login_activity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+
+
+
         JsonObjectRequest jsArrayRequest = new JsonObjectRequest
                 (Request.Method.POST, constants.SERVICE_AUTHENTICATION, request, new Response.Listener<JSONObject>() {
                     @Override
@@ -74,7 +79,7 @@ public class login_activity extends AppCompatActivity {
                             //Check if user got logged in successfully
                             System.out.println("[RESPONSE]: " +  response);
                             if (!response.has("message")) {
-                                User user = new User(response.getString("name"), response.getString("email"), response.getString("token"));
+                                User user = new User(response.getInt("id"),response.getString("name"), response.getString("email"), response.getString("token"));
                                 session.loginUser(user);
                                 Intent launcher = new Intent(getApplicationContext(), menu_main_activity.class);
                                 startActivity(launcher);
@@ -106,9 +111,9 @@ public class login_activity extends AppCompatActivity {
                     }
                 });
 
-        // Access the RequestQueue through your singleton class.
+
         MySingleton.getInstance(this).addToRequestQueue(jsArrayRequest);
-        //MySingleton.getInstance(this).addToRequestQueue(jsArrayRequest);
+
 
     }
 }

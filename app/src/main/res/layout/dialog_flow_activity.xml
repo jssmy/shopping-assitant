@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.google.cloud.android.speech.dialog_flow_activity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:theme="@style/Theme.Speech.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/launcher_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/Theme.Speech.PopupOverlay" />
+        <TextView
+            android:textColor="@color/white"
+            android:background="@color/blueGrey800"
+            android:elevation="5dp"
+            android:layout_alignParentTop="true"
+            app:layout_scrollFlags = "scroll|enterAlways"
+            android:id="@+id/assitant_status"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="Asistente desconectado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/start_listening"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:onClick="speaking"
+        app:srcCompat="@drawable/ic_mic_none_black_24dp" />
+
+</android.support.design.widget.CoordinatorLayout>

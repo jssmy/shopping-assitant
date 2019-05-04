@@ -8,7 +8,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.IBinder;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -24,10 +27,14 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Layout;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
@@ -46,6 +53,8 @@ import com.google.cloud.android.speech.utils.SpeechService;
 import com.google.cloud.android.speech.utils.VoiceRecorder;
 import com.google.cloud.android.speech.utils.MessageDialogFragment;
 import com.google.cloud.android.speech.utils.constants;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.protobuf.Method;
 
 import org.json.JSONArray;
@@ -54,103 +63,77 @@ import org.json.JSONObject;
 
 import java.security.PrivateKey;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import ai.api.AIListener;
+import ai.api.AIServiceException;
+import ai.api.android.AIConfiguration;
+import ai.api.android.AIDataService;
+import ai.api.android.AIService;
+import ai.api.android.GsonFactory;
+import ai.api.model.AIError;
+import ai.api.model.AIRequest;
+import ai.api.model.AIResponse;
+import ai.api.model.Metadata;
+import ai.api.model.Result;
+import ai.api.model.Status;
+
+/* text to speechg */
+
+
 
 public class menu_main_activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
-        , MessageDialogFragment.Listener{
+        , MessageDialogFragment.Listener {
 
         private static final String FRAGMENT_MESSAGE_DIALOG = "message_dialog";
-
         private static final String STATE_RESULTS = "results";
-
         private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
-
         private SpeechService mSpeechService;
-
         private VoiceRecorder mVoiceRecorder;
+        /* structures */
+        boolean listening = false;
+        private User user;
+        List<Product> products;
+        private RecyclerView recyclerViewProduct;
+        private JsonArrayRequest requestProduct;
+        private AIDataService aiDataService;
+        public static final String TAG = menu_main_activity.class.getName();
+        private Gson gson = GsonFactory.getGson();
 
-
-        // Resource caches
-        private int mColorHearing;
-        private int mColorNotHearing;
+        /* resources */
+        private ProgressBar progressBar;
+        private NavigationView navigationView;
+        private TextView mUserName;
+        private TextView mUserEmail;
+        private View mHeaderView;
+        private  TextView assitant_status;
         private ColorStateList mColorMicHearing;
         private ColorStateList mColorMicNotHearing;
         private FloatingActionButton microphone;
         private  SessionHandler session;
-        /// listening
-        boolean listening = false;
+        private int mColorHearing;
+        private int mColorNotHearing;
+        private ViewGroup.LayoutParams params;
 
-        // View references
-        //private TextView mStatus;
-        private  TextView assitant_status;
-        //private TextView mText;
-        private TextView mUserName;
-        private TextView mUserEmail;
-
-        private View mHeaderView;
-        private User user;
-
-
-        private ProgressBar progressBar;
-
-        //product view
-
-        List<Product> products;
-        private RecyclerView recyclerViewProduct;
-        private JsonArrayRequest requestProduct;
-
-
+        private TextToSpeech toSpeech;
         @Override
         protected void onCreate(Bundle savedInstanceState) {
+
+
             super.onCreate(savedInstanceState);
             setContentView(R.layout.launcher_menu);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.launcher_toolbar);
-            setSupportActionBar(toolbar);
-
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.launcer_drawer_layout);
-            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-            drawer.addDrawerListener(toggle);
-            toggle.syncState();
-            NavigationView navigationView = (NavigationView) findViewById(R.id.launcher_nav_view);
-            navigationView.setNavigationItemSelectedListener(this);
-
-            progressBar = new ProgressBar(this);
-
-            /* micropjone */
-            microphone =  (FloatingActionButton)findViewById(R.id.fab);
-            progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-
+            this.setupLauncher();
 
             /*  speecher */
-            final Resources resources = getResources();
-            final Resources.Theme theme = getTheme();
-            mColorHearing = ResourcesCompat.getColor(resources, R.color.status_hearing, theme);
-            mColorNotHearing = ResourcesCompat.getColor(resources, R.color.status_not_hearing, theme);
-            mColorMicHearing = getResources().getColorStateList(R.color.status_hearing);
-            mColorMicNotHearing = getResources().getColorStateList(R.color.status_not_hearing);
+            this.setupSpeecher();
 
-            //mStatus = (TextView) findViewById(R.id.status);
-            //mText = (TextView) findViewById(R.id.text);
-            assitant_status = (TextView)findViewById(R.id.assitant_status);
-            mUserName = (TextView)findViewById(R.id.launcher_header_username);
-            mUserEmail= (TextView)findViewById(R.id.launcher_header_email);
+            this.checkAuth();
 
-            user = new User("User","email","token");
-            session = new SessionHandler(this);
-            if(!session.isLoggedIn()){
-                Intent login = new Intent(this,login_activity.class);
-                startActivity(login);
-                finish();
-            }else{
-                user = session.getUserDetails();
-            }
-
-            mHeaderView = navigationView.getHeaderView(0);
-            mUserName = (TextView) mHeaderView.findViewById(R.id.launcher_header_username);
-            mUserEmail = (TextView)mHeaderView.findViewById(R.id.launcher_header_email);
+            this.setupResources();
 
             /* product view */
             products = new ArrayList<>();
@@ -166,14 +149,76 @@ public class menu_main_activity extends AppCompatActivity
             mUserName.setText(user.getFullName());
         }
 
+        private  void setupResources(){
+            assitant_status = (TextView)findViewById(R.id.assitant_status);
+            mUserName = (TextView)findViewById(R.id.launcher_header_username);
+            mUserEmail= (TextView)findViewById(R.id.launcher_header_email);
+            progressBar = new ProgressBar(this);
+
+            /* micropjone */
+            microphone =  (FloatingActionButton)findViewById(R.id.fab);
+            progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+            mHeaderView = navigationView.getHeaderView(0);
+            mUserName = (TextView) mHeaderView.findViewById(R.id.launcher_header_username);
+            mUserEmail = (TextView)mHeaderView.findViewById(R.id.launcher_header_email);
+            params = microphone.getLayoutParams();
+
+        }
+        private void setupLauncher(){
+            Toolbar toolbar = (Toolbar) findViewById(R.id.launcher_toolbar);
+            setSupportActionBar(toolbar);
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.launcer_drawer_layout);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawer.addDrawerListener(toggle);
+            toggle.syncState();
+            navigationView = (NavigationView) findViewById(R.id.launcher_nav_view);
+            navigationView.setNavigationItemSelectedListener(this);
+
+
+        }
+        private void setupSpeecher(){
+            final Resources resources = getResources();
+            final Resources.Theme theme = getTheme();
+            mColorHearing = ResourcesCompat.getColor(resources, R.color.status_hearing, theme);
+            mColorNotHearing = ResourcesCompat.getColor(resources, R.color.status_not_hearing, theme);
+            mColorMicHearing = getResources().getColorStateList(R.color.status_hearing);
+            mColorMicNotHearing = getResources().getColorStateList(R.color.status_not_hearing);
+            final AIConfiguration config = new AIConfiguration("a013eae742554cd9bcd609a6552bab1d",AIConfiguration.SupportedLanguages.Spanish,AIConfiguration.RecognitionEngine.System);
+            aiDataService = new AIDataService(getApplicationContext(),config);
+
+            toSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    toSpeech.setLanguage(Locale.ROOT);
+                }
+            });
+
+        }
+        private void checkAuth(){
+            user = new User("User","email","token");
+            session = new SessionHandler(this);
+            if(!session.isLoggedIn()){
+                Intent login = new Intent(this,login_activity.class);
+                startActivity(login);
+                finish();
+            }else{
+                user = session.getUserDetails();
+            }
+        }
+
+        /* button list cart */
+        public  void showCart(MenuItem item){
+            Intent i = new Intent(this, list_cart_activity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            this.startActivity(i);
+        }
+
 
     /* button fab */
 
         public void speaking(View view)
         {
-
-
-
             listening=!listening;
 
             if(listening)
@@ -196,8 +241,6 @@ public class menu_main_activity extends AppCompatActivity
 
             }else {
                 stopVoiceRecorder();
-                microphone.setImageResource(R.drawable.ic_mic_none_black_24dp);
-                microphone.setBackgroundTintList(mColorMicNotHearing);
                 assitant_status.setText("Asistente desconectado");
                 //mText.setText(null);
                 //mStatus.setText(null);
@@ -228,11 +271,14 @@ public class menu_main_activity extends AppCompatActivity
             // automatically handle clicks on the Home/Up button, so long
             // as you specify a parent activity in AndroidManifest.xml.
             int id = item.getItemId();
-
-            //noinspection SimplifiableIfStatement
-            if (id == R.id.action_settings) {
+            if(id==R.id.speech){
+                Intent speech = new Intent(getApplicationContext(),MainActivity.class);
+                startActivity(speech);
+                finish();
                 return true;
             }
+            //noinspection SimplifiableIfStatement
+
 
             return super.onOptionsItemSelected(item);
         }
@@ -255,6 +301,12 @@ public class menu_main_activity extends AppCompatActivity
                 session.logoutUser();
                 startActivity(login);
                 finish();
+                return  true;
+            }else if(id==R.id.speech){
+                Intent speech = new Intent(getApplicationContext(),dialog_flow_activity.class);
+                startActivity(speech);
+                finish();
+                return true;
             }
 
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.launcer_drawer_layout);
@@ -272,9 +324,9 @@ public class menu_main_activity extends AppCompatActivity
         public void onMessageDialogDismissed() {
 
         }
-
-
-        /* ************** speacker ***************/
+        /*
+        * speecher listenin
+        * */
 
         private final SpeechService.Listener mSpeechServiceListener =
                 new SpeechService.Listener() {
@@ -288,12 +340,9 @@ public class menu_main_activity extends AppCompatActivity
                                 @Override
                                 public void run() {
                                     if (isFinal) {
-                                        //mText.setText(null);
-                                        //mAdapter.addResult(text);
-                                        //mRecyclerView.smoothScrollToPosition(0);
-                                    } else {
-                                        System.out.println("[ USER SAY]: "+text);
-                                        //mText.setText(text);
+                                        /* enviar a dialog flow */
+                                        sendRequest(text);
+
                                     }
                                 }
                             });
@@ -320,25 +369,15 @@ public class menu_main_activity extends AppCompatActivity
             public void onServiceDisconnected(ComponentName componentName) {
                 mSpeechService = null;
             }
-
         };
-
         private void showStatus(final boolean hearingVoice) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
-                    //mStatus.setTextColor(hearingVoice ? mColorHearing : mColorNotHearing);
-                    //microphone.setBackgroundTintList(hearingVoice?getResources().getColorStateList(R.color.accent):getResources().getColorStateList(R.color.primary_dark));
-                    microphone.setImageResource(hearingVoice?R.drawable.ic_mic_black_24dp:R.drawable.ic_mic_none_black_24dp);
-                    microphone.setBackgroundTintList(hearingVoice?mColorMicHearing:mColorMicNotHearing);
-
-
-                    //microphone.setBackgroundColor(hearingVoice ? Color.parseColor("#0972cc") : Color.parseColor("#7B1FA2"));
+                    speechListerResource(hearingVoice);
                 }
             });
         }
-
         private final VoiceRecorder.Callback mVoiceCallback = new VoiceRecorder.Callback() {
 
             @Override
@@ -378,26 +417,35 @@ public class menu_main_activity extends AppCompatActivity
         private void stopVoiceRecorder()
         {
             mVoiceRecorder.stop();
+            listening=false;
+            speechListerResource(false);
         }
-
 
         /*
         * recycler view
         * */
         public void requestProducts(){
-            System.out.println("--[ PRODUCT REQUEST ]--");
             requestProduct = new JsonArrayRequest(
                     constants.SERVICE_PRODUCTS,
                     new Response.Listener<JSONArray>() {
                         @Override
                         public void onResponse(JSONArray response) {
-                            System.out.println("[ PRODUCT RESPONSE ]");
+
                             JSONObject obj;
                             try{
                                 for (int i=0; i<response.length(); i++){
 
                                     obj = response.getJSONObject(i);
-                                    Product product = new Product(obj.getInt("id"),obj.getString("name"),Float.parseFloat(obj.getString("price")),obj.getInt("ranking"),obj.getString("description"),obj.getString("url_img"));
+                                    Product product = new Product(
+                                            obj.getInt("id"),
+                                            obj.getString("name"),
+                                            Float.parseFloat(obj.getString("price")),
+                                            obj.getInt("ranking"),
+                                            obj.getString("description"),
+                                            obj.getString("url_img"),
+                                            "",
+                                            obj.getInt("discount"),
+                                            obj.getInt("stock"));
                                     products.add(product);
                                 }
 
@@ -412,8 +460,6 @@ public class menu_main_activity extends AppCompatActivity
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        System.out.println("[ PRODUCT REQUEST ERROR ]");
-
                         volleyError.printStackTrace();
                     }
                 }){
@@ -424,18 +470,121 @@ public class menu_main_activity extends AppCompatActivity
             };
 
             MySingleton.getInstance(getApplicationContext()).addToRequestQueue(requestProduct);
-            System.out.println("[ PRODUCT REQUEST END ]");
-
-
         }
-
         private void productAdapterSettings(List<Product> products){
-
             ProductApater productApater = new ProductApater(getApplicationContext(),products);
             recyclerViewProduct.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
             recyclerViewProduct.setAdapter(productApater);
 
         }
 
+        private void speechListerResource(boolean hearingVoice){
+            microphone.setImageResource(hearingVoice?R.drawable.ic_mic_black_24dp:R.drawable.ic_mic_none_black_24dp);
+            microphone.setBackgroundTintList(hearingVoice?mColorMicHearing:mColorMicNotHearing);
+        }
 
+        /*
+        * dialog flow
+        * */
+        private void sendRequest(String queryString) {
+            System.out.println(" VOICE REQUEST :" + queryString);
+            final AsyncTask<String, Void, AIResponse> task = new AsyncTask<String, Void, AIResponse>() {
+
+                private AIError aiError;
+                @Override
+                protected AIResponse doInBackground(String... params) {
+                    final AIRequest request = new AIRequest();
+                    String query = params[0];
+                    request.setQuery(query);
+                    try {
+                        final AIResponse response = aiDataService.request(request);
+                        return response;
+                    } catch (AIServiceException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(final AIResponse response) {
+
+                    if (response != null) {
+                        onResult(response);
+                    } else {
+                        //onError(aiError);
+                    }
+                }
+
+            }.execute(queryString);
+        }
+
+        private void onResult(final AIResponse response) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+
+                System.out.println(gson.toJson(response));
+                final Result result = response.getResult();
+                final String speech = result.getFulfillment().getSpeech();
+                toSpeech.speak(speech  ,TextToSpeech.QUEUE_FLUSH,null,null);
+                System.out.println("[  HABLAR ]: "+speech);
+                stopVoiceRecorder();
+                /*
+                * action
+                * */
+
+                switch (result.getAction())
+                {
+                        case  "buscar":
+                            case "busqueda_sugerida_genero_color_talla":
+                            System.out.println("dentro de la acción buscar");
+                            System.out.println("data: "+result.getFulfillment().getData());
+                                if(!result.getMetadata().isWebhookUsed()) break;
+                                if(result.getFulfillment().getData().equals(null)) break;
+
+                                try {
+                                    JsonElement  data = result.getFulfillment().getData().get("items");
+                                    //System.out.println("DATA: "+data);
+                                    System.out.println("DATA"+ data.toString());
+                                    JSONObject items = new JSONObject(data.toString());
+                                    JSONArray values =items.getJSONArray("data");
+                                    if(values.length()==0) break;
+                                    JSONObject obj;
+                                    products = new ArrayList<>();
+                                    for(int i=0; i<values.length(); i++)
+                                    {
+                                        obj = values.getJSONObject(i);
+                                        Product product = new Product();
+                                        product.setID(obj.getInt("id"));
+                                        product.setName(obj.getString("name"));
+                                        product.setUrl_img(obj.getString("url_img"));
+                                        product.setPrice(Float.parseFloat(obj.getString("price")));
+                                        product.setDescription(obj.getString("description"));
+                                        products.add(product);
+                                    }
+                                    productAdapterSettings(products);
+
+                                }catch (JSONException e){
+                                    e.printStackTrace();
+                                }
+
+                        break;
+                }
+
+                long time = 99 * speech.length();
+                assitant_status.setText("Hablando...");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        startVoiceRecorder();
+                        assitant_status.setText("Escuchando...");
+                    }
+                },time);
+
+            }
+
+        });
+    }
 }

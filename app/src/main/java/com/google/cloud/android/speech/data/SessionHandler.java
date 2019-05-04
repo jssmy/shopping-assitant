@@ -20,6 +20,7 @@ import java.util.Map;
 public class SessionHandler {
     private static final String PREF_NAME = "UserSession";
     private static final String KEY_USERNAME = "username";
+    private static final String KEY_USER_ID="userid";
     private static final String KEY_FULL_NAME = "full_name";
     private static final String KEY_EMAIL="email";
     private static final String KEY_TOKEN = "token";
@@ -79,6 +80,7 @@ public class SessionHandler {
         mEditor.putString(KEY_TOKEN,user.getToken());
         mEditor.putString(KEY_EMAIL,user.getEmail());
         mEditor.putString(KEY_FULL_NAME,user.getFullName());
+        mEditor.putInt(KEY_USER_ID,user.getId());
         mEditor.commit();
     }
 
@@ -108,6 +110,7 @@ public class SessionHandler {
         user.setFullName(mPreferences.getString(KEY_FULL_NAME, KEY_EMPTY));
         user.setEmail(mPreferences.getString(KEY_EMAIL,KEY_EMPTY));
         user.setToken(mPreferences.getString(KEY_TOKEN,KEY_EMPTY));
+        user.setId(mPreferences.getInt(KEY_USER_ID,0));
         return user;
     }
 

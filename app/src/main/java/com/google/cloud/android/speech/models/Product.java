@@ -9,7 +9,8 @@ public class Product {
     private  String description;
     private String url_img;
     private String tags;
-
+    private int discount;
+    private int stock;
     public Product() {
     }
 
@@ -21,6 +22,27 @@ public class Product {
         this.description = description;
         this.url_img = url_img;
         this.tags = tags;
+    }
+
+    public Product(
+            int ID,
+            String name,
+            float price,
+            int ranking,
+            String description,
+            String url_img,
+            String tags,
+            int discount,
+            int stock) {
+        this.ID = ID;
+        this.name = name;
+        this.price = price;
+        this.ranking = ranking;
+        this.description = description;
+        this.url_img = url_img;
+        this.tags = tags;
+        this.discount = discount;
+        this.stock = stock;
     }
 
     public Product(String name, float price, int ranking, String description, String url_img) {
@@ -94,5 +116,31 @@ public class Product {
 
     public void setTags(String tags) {
         this.tags = tags;
+    }
+
+    public int getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public float currentPrice()
+    {
+        return  this.round(this.price - this.price*((float)(this.discount/100.0)));
+    }
+
+    private  float round(float val)
+    {
+        return (float)(Math.round(val*100.0)/100.0);
     }
 }

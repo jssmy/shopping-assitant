@@ -14,7 +14,7 @@
   limitations under the License.
 -->
 <resources>
-    <string name="app_name">Speech</string>
+    <string name="app_name">Toni Shopper</string>
     <string name="permission_message">This app needs to record audio and recognize your speech.</string>
     <string name="listening">Listening…</string>
     <string name="load_file">Load file</string>
@@ -35,5 +35,6 @@
     <string name="register_now">Registrarse ahora</string>
     <string name="register">Crear nueva cuenta</string>
     <string name="forgotpassword">¿Olvidaste la contraseña?</string>
+    <string name="ispeech_api_key">6717d4849bf6160d77c4392f4e6735a4</string>
 
 </resources>

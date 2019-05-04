@@ -19,5 +19,24 @@
 -dontwarn io.grpc.**
 -dontwarn okio.**
 -dontwarn com.google.errorprone.annotations.**
+-dontwarn javax.naming.**
+-dontwarn javax.servlet.**
+-dontwarn org.slf4j.**
 -keep class io.grpc.internal.DnsNameResolveProvider
 -keep class io.grpc.okhttp.OkHttpChannelProvider
+-ignorewarnings
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

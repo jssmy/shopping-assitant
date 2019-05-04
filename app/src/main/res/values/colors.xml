@@ -19,8 +19,8 @@
     <color name="primary_dark">#388E3C</color>
     <color name="accent">#536DFE</color>
     <color name="buttonColorDark">#036a8c</color>
-    <color name="status_hearing">#F7393941</color>
-    <color name="status_not_hearing">#F74C4C52</color>
+    <color name="status_hearing">#FF6600</color>
+    <color name="status_not_hearing">#FF9800</color>
     <color name="white">#FFFFFF</color>
     <color name="backgroundTinted">#88006064</color>
     <color name="grey800">#424242</color>
@@ -29,5 +29,8 @@
     <color name="gplus_color_1">#3e802f</color>
     <color name="black">#000000</color>
     <color name="green">#4DC513</color>
+    <color name="colorPrimary">#607D8B</color>
+    <color name="colorPrimaryDark">#455A64</color>
+    <color name="colorAccent">#FF9800</color>
 
 </resources>

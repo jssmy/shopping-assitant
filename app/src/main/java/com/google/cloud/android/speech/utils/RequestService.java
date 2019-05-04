@@ -26,6 +26,14 @@ public class RequestService {
     private Map Header;
     private Context context;
 
+    public JSONObject getResponseService() {
+        return responseService;
+    }
+
+    public void setResponseService(JSONObject responseService) {
+        this.responseService = responseService;
+    }
+
     public RequestService(Context context) {
         this.context = context;
     }
@@ -39,9 +47,6 @@ public class RequestService {
         URL= url;
         data = object;
         Header =header;
-        System.out.println("[URL]: "+ URL);
-        System.out.println("[data]: "+ data);
-        System.out.println("[header]: "+ Header);
         JsonObjectRequest    requestPOST = new JsonObjectRequest
         (
                 Request.Method.POST,
@@ -50,30 +55,23 @@ public class RequestService {
                 new Response.Listener<JSONObject>() {
                     @Override
                         public void onResponse(JSONObject response) {
-
                                  responseService = response;
-                                 System.out.println("[ PRUEBA-- ]: "+responseService);
-
+                                System.out.println("[ POST METHOD REQUEST ] + "+ responseService);
                         }
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             try {
-    //                            System.out.println("[-- RESPONSE  FAILED --]");
                                 responseService.put("message_error",error.getMessage());
-                                System.out.println(responseService.toString());
                             }catch (JSONException e){
                                 e.printStackTrace();
                             }
                         }
                     }
-
         );
 
-        //System.out.println("[ PRUEBA ]: "+responseService);
-
+        System.out.println("[ POST METHOD REQUEST ] + "+ responseService);
         MySingleton.getInstance(context).addToRequestQueue(requestPOST);
-
         return  responseService;
     }
 
