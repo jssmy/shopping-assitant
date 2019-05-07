@@ -1,6 +1,5 @@
 package com.google.cloud.android.speech.adapter;
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,29 +9,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.google.cloud.android.speech.R;
-import com.google.cloud.android.speech.data.SessionHandler;
-import com.google.cloud.android.speech.models.ItemCart;
-import com.google.cloud.android.speech.models.Product;
+import com.google.cloud.android.speech.entities.ItemCart;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.cloud.android.speech.models.User;
-import com.google.cloud.android.speech.product_detail_activity;
 import com.google.cloud.android.speech.utils.MySingleton;
 import com.google.cloud.android.speech.utils.constants;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
-import java.util.Map;
 
 
 public class ItemCartAdapter extends  RecyclerView.Adapter<ItemCartAdapter.ItemCartViewHolder>{

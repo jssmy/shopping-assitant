@@ -13,10 +13,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.cloud.android.speech.data.SessionHandler;
-import com.google.cloud.android.speech.models.User;
+import com.google.cloud.android.speech.entities.User;
 import com.google.cloud.android.speech.utils.MySingleton;
 import com.google.cloud.android.speech.utils.constants;
-import com.google.cloud.android.speech.data.SessionHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;

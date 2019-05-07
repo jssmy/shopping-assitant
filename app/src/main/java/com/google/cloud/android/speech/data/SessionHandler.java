@@ -2,16 +2,8 @@ package com.google.cloud.android.speech.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import com.google.cloud.android.speech.models.User;
-import com.google.cloud.android.speech.utils.MySingleton;
+import com.google.cloud.android.speech.entities.User;
 import com.google.cloud.android.speech.utils.RequestService;
-import com.google.cloud.android.speech.utils.constants;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Abhi on 20 Jan 2018 020.
@@ -91,7 +83,6 @@ public class SessionHandler {
      */
     public boolean isLoggedIn() {
         String auth = mPreferences.getString(KEY_TOKEN, KEY_EMPTY);
-        System.out.println("[ CHECK AUTHENTICATE]" + auth);
         return !auth.isEmpty();
     }
 

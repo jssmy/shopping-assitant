@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.content.pm.ProviderInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -25,29 +24,23 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.cloud.android.speech.adapter.ProductApater;
 import com.google.cloud.android.speech.data.SessionHandler;
-import com.google.cloud.android.speech.models.Product;
-import com.google.cloud.android.speech.models.User;
+import com.google.cloud.android.speech.entities.Product;
+import com.google.cloud.android.speech.entities.User;
 import com.google.cloud.android.speech.utils.MySingleton;
 import com.google.cloud.android.speech.utils.SpeechService;
 import com.google.cloud.android.speech.utils.VoiceRecorder;
@@ -55,31 +48,23 @@ import com.google.cloud.android.speech.utils.MessageDialogFragment;
 import com.google.cloud.android.speech.utils.constants;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.protobuf.Method;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.security.PrivateKey;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import ai.api.AIListener;
 import ai.api.AIServiceException;
 import ai.api.android.AIConfiguration;
 import ai.api.android.AIDataService;
-import ai.api.android.AIService;
 import ai.api.android.GsonFactory;
-import ai.api.model.AIError;
 import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
-import ai.api.model.Metadata;
 import ai.api.model.Result;
-import ai.api.model.Status;
 
 /* text to speechg */
 
@@ -139,6 +124,7 @@ public class menu_main_activity extends AppCompatActivity
             products = new ArrayList<>();
             recyclerViewProduct = (RecyclerView)findViewById(R.id.product_list);
             requestProducts();
+
         }
 
 
@@ -147,9 +133,18 @@ public class menu_main_activity extends AppCompatActivity
             super.onStart();
             mUserEmail.setText(user.getEmail());
             mUserName.setText(user.getFullName());
+
+
+
         }
 
-        private  void setupResources(){
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    private  void setupResources(){
             assitant_status = (TextView)findViewById(R.id.assitant_status);
             mUserName = (TextView)findViewById(R.id.launcher_header_username);
             mUserEmail= (TextView)findViewById(R.id.launcher_header_email);
@@ -223,14 +218,14 @@ public class menu_main_activity extends AppCompatActivity
 
             if(listening)
             {
-                assitant_status.setText("Escuchando...");
+
                 // Prepare Cloud Speech API
                 bindService(new Intent(this, SpeechService.class), mServiceConnection, BIND_AUTO_CREATE);
 
                 // Start listening to voices
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                         == PackageManager.PERMISSION_GRANTED) {
-                    startVoiceRecorder();
+                    listen();
                 } else if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.RECORD_AUDIO)) {
                     showPermissionMessageDialog();
@@ -245,6 +240,26 @@ public class menu_main_activity extends AppCompatActivity
                 //mText.setText(null);
                 //mStatus.setText(null);
             }
+        }
+
+        private  void  listen()
+        {
+            startVoiceRecorder();
+            assitant_status.setText("Escuchando...");
+        }
+
+        private void speak(String text){
+
+            stopVoiceRecorder();
+            assitant_status.setText("Hablando...");
+            toSpeech.speak(text,TextToSpeech.QUEUE_FLUSH,null,null);
+            long time = 99 * text.length();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    listen();
+                }
+            },time);
         }
 
 
@@ -416,7 +431,7 @@ public class menu_main_activity extends AppCompatActivity
 
         private void stopVoiceRecorder()
         {
-            mVoiceRecorder.stop();
+            if(mVoiceRecorder!=null) mVoiceRecorder.stop();
             listening=false;
             speechListerResource(false);
         }
@@ -490,12 +505,12 @@ public class menu_main_activity extends AppCompatActivity
             System.out.println(" VOICE REQUEST :" + queryString);
             final AsyncTask<String, Void, AIResponse> task = new AsyncTask<String, Void, AIResponse>() {
 
-                private AIError aiError;
                 @Override
                 protected AIResponse doInBackground(String... params) {
                     final AIRequest request = new AIRequest();
                     String query = params[0];
                     request.setQuery(query);
+
                     try {
                         final AIResponse response = aiDataService.request(request);
                         return response;
@@ -515,6 +530,7 @@ public class menu_main_activity extends AppCompatActivity
                     }
                 }
 
+
             }.execute(queryString);
         }
 
@@ -527,9 +543,10 @@ public class menu_main_activity extends AppCompatActivity
                 System.out.println(gson.toJson(response));
                 final Result result = response.getResult();
                 final String speech = result.getFulfillment().getSpeech();
-                toSpeech.speak(speech  ,TextToSpeech.QUEUE_FLUSH,null,null);
+                speak(speech);
+                //toSpeech.speak(speech  ,TextToSpeech.QUEUE_FLUSH,null,null);
                 System.out.println("[  HABLAR ]: "+speech);
-                stopVoiceRecorder();
+                //stopVoiceRecorder();
                 /*
                 * action
                 * */
@@ -540,8 +557,8 @@ public class menu_main_activity extends AppCompatActivity
                             case "busqueda_sugerida_genero_color_talla":
                             System.out.println("dentro de la acción buscar");
                             System.out.println("data: "+result.getFulfillment().getData());
+                                System.out.println("data: "+result.getParameters());
                                 if(!result.getMetadata().isWebhookUsed()) break;
-                                if(result.getFulfillment().getData().equals(null)) break;
 
                                 try {
                                     JsonElement  data = result.getFulfillment().getData().get("items");
@@ -572,6 +589,7 @@ public class menu_main_activity extends AppCompatActivity
                         break;
                 }
 
+                /*
                 long time = 99 * speech.length();
                 assitant_status.setText("Hablando...");
                 new Handler().postDelayed(new Runnable() {
@@ -582,6 +600,7 @@ public class menu_main_activity extends AppCompatActivity
                         assitant_status.setText("Escuchando...");
                     }
                 },time);
+                */
 
             }
 

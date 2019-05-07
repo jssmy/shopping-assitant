@@ -8,16 +8,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.google.cloud.android.speech.adapter.ItemCartAdapter;
-import com.google.cloud.android.speech.adapter.ProductApater;
 import com.google.cloud.android.speech.data.SessionHandler;
-import com.google.cloud.android.speech.models.ItemCart;
-import com.google.cloud.android.speech.models.Product;
-import com.google.cloud.android.speech.models.User;
+import com.google.cloud.android.speech.entities.ItemCart;
+import com.google.cloud.android.speech.entities.User;
 import com.google.cloud.android.speech.utils.MySingleton;
 import com.google.cloud.android.speech.utils.constants;
 

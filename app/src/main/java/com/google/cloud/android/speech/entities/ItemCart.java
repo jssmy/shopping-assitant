@@ -1,4 +1,4 @@
-package com.google.cloud.android.speech.models;
+package com.google.cloud.android.speech.entities;
 
 public class ItemCart {
     private     int id;

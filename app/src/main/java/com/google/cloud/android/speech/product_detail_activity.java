@@ -6,28 +6,24 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.cloud.android.speech.data.SessionHandler;
-import com.google.cloud.android.speech.models.Product;
-import com.google.cloud.android.speech.models.User;
+import com.google.cloud.android.speech.entities.Product;
+import com.google.cloud.android.speech.entities.User;
 import com.google.cloud.android.speech.utils.MySingleton;
 import com.google.cloud.android.speech.utils.constants;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Map;
 
 public class product_detail_activity extends AppCompatActivity {
 
@@ -41,6 +37,7 @@ public class product_detail_activity extends AppCompatActivity {
     private  Product product;
     private  TextView itemTotal;
     private SessionHandler session;
+    private ProgressBar progressBar;
     RequestOptions options;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +61,8 @@ public class product_detail_activity extends AppCompatActivity {
         itemTotal = (TextView)findViewById(R.id.total);
         itemQuantityValue=0;
         options = new RequestOptions().centerCrop().placeholder(R.mipmap.ic_launcher_logo_icon).error(R.mipmap.ic_launcher_logo_icon);
+        progressBar = (ProgressBar)findViewById(R.id.progress_bar);
+
         requestProducts(item_code);
 
 
@@ -75,7 +74,7 @@ public class product_detail_activity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject obj) {
                 try {
-                    System.out.println(obj);
+
                     product = new Product(
                             obj.getInt("id"),
                             obj.getString("name"),
@@ -91,8 +90,11 @@ public class product_detail_activity extends AppCompatActivity {
                     item_price.setText("S/. " + String.valueOf(product.currentPrice())+" por " + product.getName());
                     item_description.setText(product.getDescription());
                     Glide.with(getApplicationContext()).load(product.getUrl_img()).apply(options).into(item_image);
+                    progressBar.setVisibility(View.INVISIBLE);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),"Ha sucedido un error",Toast.LENGTH_LONG).show();
+                    progressBar.setVisibility(View.INVISIBLE);
                 }
             }
         }, new Response.ErrorListener() {
@@ -134,10 +136,12 @@ public class product_detail_activity extends AppCompatActivity {
 
     public   void addToCart(View view)
     {
+        if(progressBar.getVisibility()==View.VISIBLE) return;
         if(itemQuantityValue==0){
             Toast.makeText(getApplicationContext(),"La cantidad mínica es uno",Toast.LENGTH_LONG).show();
             return;
         }
+
 
         session = new SessionHandler(getApplicationContext());
         User user = session.getUserDetails();
