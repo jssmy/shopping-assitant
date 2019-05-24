@@ -1,4 +1,4 @@
-package com.google.cloud.android.speech.adapter;
+package com.toni.cloud.android.shopper.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -14,11 +14,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
-import com.google.cloud.android.speech.R;
-import com.google.cloud.android.speech.entities.ItemCart;
+import com.google.cloud.android.shopper.R;
+import com.toni.cloud.android.shopper.entities.ItemCart;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.cloud.android.speech.utils.MySingleton;
-import com.google.cloud.android.speech.utils.constants;
+import com.toni.cloud.android.shopper.utils.MySingleton;
+import com.toni.cloud.android.shopper.utils.constants;
 
 import org.json.JSONException;
 import org.json.JSONObject;

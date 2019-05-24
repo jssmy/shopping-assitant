@@ -1,10 +1,12 @@
-package com.google.cloud.android.speech;
+package com.toni.cloud.android.shopper;
 
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import com.google.cloud.android.speech.data.SessionHandler;
+
+import com.google.cloud.android.shopper.R;
+import com.toni.cloud.android.shopper.data.SessionHandler;
 
 public class splash_activity extends AppCompatActivity {
 

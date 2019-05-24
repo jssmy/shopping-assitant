@@ -1,4 +1,4 @@
-package com.google.cloud.android.speech.entities;
+package com.toni.cloud.android.shopper.entities;
 
 public class ItemCart {
     private     int id;

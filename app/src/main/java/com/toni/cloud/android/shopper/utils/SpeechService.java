@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.cloud.android.speech.utils;
+package com.toni.cloud.android.shopper.utils;
 
 import android.app.Service;
 import android.content.Context;
@@ -32,18 +32,19 @@ import android.util.Log;
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.android.speech.R;
+import com.google.cloud.android.shopper.R;
 import com.google.cloud.speech.v1.RecognitionAudio;
-import com.google.cloud.speech.v1.RecognitionConfig;
-import com.google.cloud.speech.v1.RecognizeRequest;
-import com.google.cloud.speech.v1.RecognizeResponse;
-import com.google.cloud.speech.v1.SpeechGrpc;
-import com.google.cloud.speech.v1.SpeechRecognitionAlternative;
-import com.google.cloud.speech.v1.SpeechRecognitionResult;
-import com.google.cloud.speech.v1.StreamingRecognitionConfig;
-import com.google.cloud.speech.v1.StreamingRecognitionResult;
-import com.google.cloud.speech.v1.StreamingRecognizeRequest;
-import com.google.cloud.speech.v1.StreamingRecognizeResponse;
+import  com.google.cloud.speech.v1.RecognitionConfig;
+import  com.google.cloud.speech.v1.RecognizeRequest;
+import  com.google.cloud.speech.v1.RecognizeResponse;
+import  com.google.cloud.speech.v1.SpeechGrpc;
+import  com.google.cloud.speech.v1.SpeechRecognitionAlternative;
+import  com.google.cloud.speech.v1.SpeechRecognitionResult;
+import  com.google.cloud.speech.v1.StreamingRecognitionConfig;
+import  com.google.cloud.speech.v1.StreamingRecognitionResult;
+import  com.google.cloud.speech.v1.StreamingRecognizeRequest;
+import  com.google.cloud.speech.v1.StreamingRecognizeResponse;
+
 import com.google.protobuf.ByteString;
 
 import java.io.IOException;

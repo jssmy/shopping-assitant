@@ -1,19 +1,18 @@
-package com.google.cloud.android.speech;
+package com.toni.cloud.android.shopper;
 
-import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
+
+import com.google.cloud.android.shopper.R;
 
 import java.util.Locale;
 
 import ai.api.AIListener;
-import ai.api.AIServiceException;
 import ai.api.android.AIConfiguration;
 import ai.api.android.AIService;
 import ai.api.model.AIError;
@@ -44,7 +43,7 @@ public class dialog_flow_activity extends AppCompatActivity implements  AIListen
     }
 
     private void initService(){
-        final AIConfiguration  config = new AIConfiguration("c6f424e220314859b7d7024c9c7daa6f",AIConfiguration.SupportedLanguages.Spanish,AIConfiguration.RecognitionEngine.System);
+        final AIConfiguration  config = new AIConfiguration("a013eae742554cd9bcd609a6552bab1d",AIConfiguration.SupportedLanguages.Spanish,AIConfiguration.RecognitionEngine.System);
         aiService = AIService.getService(getApplicationContext(),config);
         aiService.setListener(this);
         toSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
@@ -77,6 +76,7 @@ public class dialog_flow_activity extends AppCompatActivity implements  AIListen
     public void onResult(AIResponse aiResponse) {
         Result result = aiResponse.getResult();
         String speechText = result.getFulfillment().getSpeech();
+        Toast.makeText(getApplicationContext(),speechText,Toast.LENGTH_LONG).show();
         toSpeech.speak(speechText,TextToSpeech.QUEUE_FLUSH,null,null);
         long time = 99 * speechText.length();
 

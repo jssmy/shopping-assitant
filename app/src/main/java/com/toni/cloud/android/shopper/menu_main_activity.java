@@ -1,4 +1,4 @@
-package com.google.cloud.android.speech;
+package com.toni.cloud.android.shopper;
 
 import android.Manifest;
 import android.content.ComponentName;
@@ -31,21 +31,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.google.cloud.android.speech.adapter.ProductApater;
-import com.google.cloud.android.speech.data.SessionHandler;
-import com.google.cloud.android.speech.entities.Product;
-import com.google.cloud.android.speech.entities.User;
-import com.google.cloud.android.speech.utils.MySingleton;
-import com.google.cloud.android.speech.utils.SpeechService;
-import com.google.cloud.android.speech.utils.VoiceRecorder;
-import com.google.cloud.android.speech.utils.MessageDialogFragment;
-import com.google.cloud.android.speech.utils.constants;
+import com.google.cloud.android.shopper.R;
+import com.toni.cloud.android.shopper.adapter.ProductApater;
+import com.toni.cloud.android.shopper.data.SessionHandler;
+import com.toni.cloud.android.shopper.entities.Product;
+import com.toni.cloud.android.shopper.entities.User;
+import com.toni.cloud.android.shopper.utils.MySingleton;
+import com.toni.cloud.android.shopper.utils.SpeechService;
+import com.toni.cloud.android.shopper.utils.VoiceRecorder;
+import com.toni.cloud.android.shopper.utils.MessageDialogFragment;
+import com.toni.cloud.android.shopper.utils.constants;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
@@ -99,7 +101,7 @@ public class menu_main_activity extends AppCompatActivity
         private ColorStateList mColorMicHearing;
         private ColorStateList mColorMicNotHearing;
         private FloatingActionButton microphone;
-        private  SessionHandler session;
+        private SessionHandler session;
         private int mColorHearing;
         private int mColorNotHearing;
         private ViewGroup.LayoutParams params;
@@ -356,6 +358,7 @@ public class menu_main_activity extends AppCompatActivity
                                 public void run() {
                                     if (isFinal) {
                                         /* enviar a dialog flow */
+                                        assitant_status.setText("Espere...");
                                         sendRequest(text);
 
                                     }
@@ -494,6 +497,7 @@ public class menu_main_activity extends AppCompatActivity
         }
 
         private void speechListerResource(boolean hearingVoice){
+
             microphone.setImageResource(hearingVoice?R.drawable.ic_mic_black_24dp:R.drawable.ic_mic_none_black_24dp);
             microphone.setBackgroundTintList(hearingVoice?mColorMicHearing:mColorMicNotHearing);
         }

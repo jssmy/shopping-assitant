@@ -1,4 +1,4 @@
-package com.google.cloud.android.speech;
+package com.toni.cloud.android.shopper;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -12,10 +12,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.google.cloud.android.speech.data.SessionHandler;
-import com.google.cloud.android.speech.entities.User;
-import com.google.cloud.android.speech.utils.MySingleton;
-import com.google.cloud.android.speech.utils.constants;
+import com.google.cloud.android.shopper.R;
+import com.toni.cloud.android.shopper.data.SessionHandler;
+import com.toni.cloud.android.shopper.entities.User;
+import com.toni.cloud.android.shopper.utils.MySingleton;
+import com.toni.cloud.android.shopper.utils.constants;
 
 import org.json.JSONException;
 import org.json.JSONObject;

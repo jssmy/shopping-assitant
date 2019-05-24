@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.cloud.android.speech;
+package com.toni.cloud.android.shopper;
 
 import android.Manifest;
 import android.content.ComponentName;
@@ -43,28 +43,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.cloud.android.speech.utils.MessageDialogFragment;
+import com.google.cloud.android.shopper.R;
+import com.toni.cloud.android.shopper.utils.MessageDialogFragment;
 
-import com.google.cloud.android.speech.utils.SpeechService;
-import com.google.cloud.android.speech.utils.VoiceRecorder;
+import com.toni.cloud.android.shopper.utils.SpeechService;
+import com.toni.cloud.android.shopper.utils.VoiceRecorder;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import ai.api.AIServiceException;
-import ai.api.RequestExtras;
 import ai.api.android.AIConfiguration;
 import ai.api.android.AIDataService;
 import ai.api.android.AIService;
 import ai.api.android.GsonFactory;
-import ai.api.model.AIContext;
 import ai.api.model.AIError;
-import ai.api.model.AIEvent;
 import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Metadata;
@@ -75,12 +71,10 @@ import ai.api.model.Status;
 * text to speech
 * */
 
-import android.media.AudioManager;
 import org.ispeech.SpeechSynthesis;
 import org.ispeech.SpeechSynthesisEvent;
-import org.ispeech.error.BusyException;
 import org.ispeech.error.InvalidApiKeyException;
-import org.ispeech.error.NoNetworkException;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.widget.Toast;

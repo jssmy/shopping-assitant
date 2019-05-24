@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.cloud.android.speech.utils;
+package com.toni.cloud.android.shopper.utils;
 
 import android.app.Dialog;
 import android.content.DialogInterface;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.google.cloud.android.speech">
+    package="com.google.cloud.android.shopper">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -16,21 +16,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Speech"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".list_cart_activity"></activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".product_detail_activity" />
-        <activity android:name=".login_activity" />
-        <activity android:name=".menu_main_activity" />
-        <activity android:name=".dialog_flow_activity" />
-        <activity android:name=".splash_activity">
+        <activity android:name="com.toni.cloud.android.shopper.list_cart_activity"></activity>
+        <activity android:name="com.toni.cloud.android.shopper.MainActivity" />
+        <activity android:name="com.toni.cloud.android.shopper.product_detail_activity" />
+        <activity android:name="com.toni.cloud.android.shopper.login_activity" />
+        <activity android:name="com.toni.cloud.android.shopper.menu_main_activity" />
+        <activity android:name="com.toni.cloud.android.shopper.dialog_flow_activity" />
+        <activity android:name="com.toni.cloud.android.shopper.splash_activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <service android:name=".utils.SpeechService" />
+        <service android:name="com.google.cloud.android.com.oni.shopper.utils.SpeechService" />
 
         <meta-data
             android:name="ispeech_api_key"

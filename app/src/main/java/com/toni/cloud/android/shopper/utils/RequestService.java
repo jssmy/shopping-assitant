@@ -1,17 +1,12 @@
-package com.google.cloud.android.speech.utils;
+package com.toni.cloud.android.shopper.utils;
 
 import android.content.Context;
-import android.icu.lang.UScript;
 
-import com.android.volley.AuthFailureError;
-import com.google.cloud.android.speech.utils.constants;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
-import com.google.cloud.android.speech.utils.MySingleton;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

@@ -7,14 +7,14 @@
     android:gravity="center_vertical"
     android:orientation="vertical"
     android:padding="50dp"
-    tools:context="com.google.cloud.android.speech.login_activity">
+    tools:context="com.toni.cloud.android.shopper.login_activity">
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@mipmap/ic_launcher_logo_icon" />
 
     <EditText
         android:id="@+id/etLoginUsername"
@@ -25,7 +25,6 @@
         android:hint="@string/email"
         android:inputType="textPersonName"
         android:padding="10dp" />
-
 
     <EditText
         android:id="@+id/etLoginPassword"
@@ -62,6 +61,5 @@
         android:background="#aaa"
         android:text="@string/register_now"
         android:textColor="@android:color/white" />
-
 
 </LinearLayout>

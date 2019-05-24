@@ -1,7 +1,5 @@
-package com.google.cloud.android.speech.utils;
+package com.toni.cloud.android.shopper.utils;
 
-
-import ai.api.android.AIConfiguration;
 
 public class constants {
 

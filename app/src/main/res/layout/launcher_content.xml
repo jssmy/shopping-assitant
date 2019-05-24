@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.google.cloud.android.speech.menu_main_activity"
+    tools:context="com.toni.cloud.android.shopper.menu_main_activity"
     android:orientation="vertical"
     tools:showIn="@layout/launcher_tool_bar">
 

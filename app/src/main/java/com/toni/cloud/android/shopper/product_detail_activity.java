@@ -1,4 +1,4 @@
-package com.google.cloud.android.speech;
+package com.toni.cloud.android.shopper;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,11 +16,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.cloud.android.speech.data.SessionHandler;
-import com.google.cloud.android.speech.entities.Product;
-import com.google.cloud.android.speech.entities.User;
-import com.google.cloud.android.speech.utils.MySingleton;
-import com.google.cloud.android.speech.utils.constants;
+import com.google.cloud.android.shopper.R;
+import com.toni.cloud.android.shopper.data.SessionHandler;
+import com.toni.cloud.android.shopper.entities.Product;
+import com.toni.cloud.android.shopper.entities.User;
+import com.toni.cloud.android.shopper.utils.MySingleton;
+import com.toni.cloud.android.shopper.utils.constants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +35,7 @@ public class product_detail_activity extends AppCompatActivity {
     private ImageView item_image;
     private EditText itemQuantity;
     private int itemQuantityValue;
-    private  Product product;
+    private Product product;
     private  TextView itemTotal;
     private SessionHandler session;
     private ProgressBar progressBar;

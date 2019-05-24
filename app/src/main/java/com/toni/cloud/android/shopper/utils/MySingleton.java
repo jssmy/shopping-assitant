@@ -1,4 +1,4 @@
-package com.google.cloud.android.speech.utils;
+package com.toni.cloud.android.shopper.utils;
 
 import android.content.Context;
 

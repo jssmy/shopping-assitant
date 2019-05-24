@@ -1,4 +1,4 @@
-package com.google.cloud.android.speech.adapter;
+package com.toni.cloud.android.shopper.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,10 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.cloud.android.speech.R;
-import com.google.cloud.android.speech.entities.Product;
+import com.google.cloud.android.shopper.R;
+import com.toni.cloud.android.shopper.entities.Product;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.cloud.android.speech.product_detail_activity;
+import com.toni.cloud.android.shopper.product_detail_activity;
 
 import java.util.List;
 
